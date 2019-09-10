@@ -7,8 +7,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _playerOne = Player(name: "Nós", score: 0, victories: 0);
-  var _playerTwo = Player(name: "Eles", score: 0, victories: 0);
+  var _playerOne = Player(id:0, name: "Nós", score: 0, victories: 0);
+  var _playerTwo = Player(id:1, name: "Eles", score: 0, victories: 0);
 
   @override
   void initState() {
@@ -61,12 +61,65 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _showPlayerName(player.name),
+          _showPlayerName(player),
           _showPlayerScore(player.score),
           _showPlayerVictories(player.victories),
           _showScoreButtons(player),
         ],
       ),
+    );
+  }
+
+  Widget _showPlayerName(Player player) 
+  {
+    return GestureDetector(
+      onTap: () => alterarNome(player),
+      child: Text(
+        player.name.toUpperCase(),
+        style: TextStyle(
+          fontSize: 22.0,
+          fontWeight: FontWeight.w500,
+          color: Colors.deepOrange),
+      )
+    );
+  }
+
+  TextEditingController _textFieldController = TextEditingController();
+
+  void alterarNome(Player player)
+  {
+    showDialog(
+      context: context,
+      barrierDismissible:false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Alterar nome"),
+          content: TextField(
+            controller: _textFieldController,
+            decoration: InputDecoration(hintText: "Nome"),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("CANCEL"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (_textFieldController != null) 
+                {
+                  setState(() {
+                     player.name = _textFieldController as String;
+                 });   
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -79,16 +132,6 @@ class _HomePageState extends State<HomePage> {
         _showPlayerBoard(_playerOne),
         _showPlayerBoard(_playerTwo),
       ],
-    );
-  }
-
-  Widget _showPlayerName(String name) {
-    return Text(
-      name.toUpperCase(),
-      style: TextStyle(
-          fontSize: 22.0,
-          fontWeight: FontWeight.w500,
-          color: Colors.deepOrange),
     );
   }
 
@@ -138,7 +181,10 @@ class _HomePageState extends State<HomePage> {
           color: Colors.black.withOpacity(0.1),
           onTap: () {
             setState(() {
-              player.score--;
+              if(player.score>0)
+              {
+                player.score--;
+              }
             });
           },
         ),
@@ -146,8 +192,12 @@ class _HomePageState extends State<HomePage> {
           text: '+1',
           color: Colors.deepOrangeAccent,
           onTap: () {
-            setState(() {
-              player.score++;
+            setState(() 
+            {
+              if(player.score <12) 
+              {
+                player.score++;              
+              }
             });
 
             if (player.score == 12) {
@@ -173,10 +223,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showDialog(
-      {String title, String message, Function confirm, Function cancel}) {
+  void _showDialog( {String title, String message, Function confirm, Function cancel})
+  {
     showDialog(
       context: context,
+      barrierDismissible:false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
