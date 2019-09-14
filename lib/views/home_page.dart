@@ -111,9 +111,10 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).pop();
                 if (_textFieldController != null) 
                 {
-                  setState(() {
-                     player.name = _textFieldController as String;
-                 });   
+                  setState(() 
+                  {
+                     player.name = _textFieldController.text;
+                  });   
                 }
               },
             ),
@@ -199,6 +200,14 @@ class _HomePageState extends State<HomePage> {
                 player.score++;              
               }
             });
+
+            if(_playerOne.score ==11 && _playerTwo.score ==11)
+            {
+              _showDialog(
+                title: "Mão de ferro",
+                message: 'Todos os jogadores recebem as cartas “cobertas”, isto é, viradas para baixo, e deverão jogar assim. Quem vencer a mão, vence a partida'
+              );
+            }
 
             if (player.score == 12) {
               _showDialog(
